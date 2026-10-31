@@ -1,0 +1,17 @@
+name: pr
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - run: bash scripts/pr-guard.sh self-test
+  guard:
+    uses: ./.github/workflows/pr-guard.yml
+    with:
+      protected-paths: |
+        .github/workflows/*
+        scripts/*

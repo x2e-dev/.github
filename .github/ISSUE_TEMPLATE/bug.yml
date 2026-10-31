@@ -1,0 +1,25 @@
+name: Bug
+description: Something behaves differently from its spec
+labels: [bug]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - P0 — data loss, security, crash (fix now)
+        - P1 — broken core flow (fix this iteration)
+        - P2 — degraded behaviour
+        - P3 — cosmetic
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes: { label: Steps to reproduce }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected vs actual }
+    validations: { required: true }
+  - type: textarea
+    id: doctor
+    attributes: { label: Diagnostics, description: Output of the doctor command, with secrets removed }

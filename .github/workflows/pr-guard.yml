@@ -1,0 +1,33 @@
+# Reusable PR guard. Call it from every x2e-dev repository:
+#   jobs: { guard: { uses: x2e-dev/.github/.github/workflows/pr-guard.yml@main, with: { protected-paths: "..." } } }
+name: pr-guard
+on:
+  workflow_call:
+    inputs:
+      protected-paths:
+        description: Newline-separated globs that need the owner-approved label ('*' matches '/')
+        type: string
+        default: ''
+      owner:
+        description: GitHub login whose labels count as owner approval
+        type: string
+        default: rs0x29a
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check PR against AGENTS.md rules
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          OWNER: ${{ inputs.owner }}
+          PROTECTED: ${{ inputs.protected-paths }}
+        run: |
+          gh api -H 'Accept: application/vnd.github.raw' 'repos/x2e-dev/.github/contents/scripts/pr-guard.sh?ref=main' > "$RUNNER_TEMP/pr-guard.sh"
+          bash "$RUNNER_TEMP/pr-guard.sh" check
