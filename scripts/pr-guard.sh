@@ -5,7 +5,9 @@
 #        pr-guard.sh self-test  (local)
 set -euo pipefail
 
-export GENERATED_RE='(^|/)(pnpm-lock\.yaml|package-lock\.json|Cargo\.lock|bun\.lockb?)$|(^|/)generated/|\.gen\.'
+# Golden frames under test/frames/ are written by the test runner and read by eye, as a lockfile is
+# written by the package manager (owner's decision, 2026-11-03): a layout change moves every frame.
+export GENERATED_RE='(^|/)(pnpm-lock\.yaml|package-lock\.json|Cargo\.lock|bun\.lockb?)$|(^|/)generated/|\.gen\.|(^|/)test/frames/'
 SOFT_LIMIT=400
 HARD_LIMIT=1000
 
@@ -71,6 +73,7 @@ check() {
 self_test() {
   check_title 'feat(runtime): add journal' && check_title 'fix!: drop x' && ! check_title 'Add stuff' && ! check_title 'feat:missing space'
   [ "$(printf 'src/a.ts\t10\t5\npnpm-lock.yaml\t900\t900\npkg/generated/x.ts\t50\t0\nb.gen.ts\t3\t3\n' | count_lines)" = 15 ]
+  [ "$(printf 'packages/tui/test/frames/80x24-en.txt\t900\t800\npackages/tui/test/app.test.tsx\t7\t2\nframes/x.ts\t4\t0\n' | count_lines)" = 13 ]
   provenance_ok $'feat: x\n\nAgent-Session: abc' && provenance_ok $'docs: y\n\nHuman-Authored: yes'
   ! provenance_ok 'feat: none' && ! provenance_ok $'feat: both\n\nAgent-Session: a\nHuman-Authored: yes'
   printf 'packages/policy/src/a.ts\n' | touches_protected $'packages/exec/*\npackages/policy/*'
