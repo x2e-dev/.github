@@ -12,13 +12,17 @@ on:
         description: GitHub login whose labels count as owner approval
         type: string
         default: rs0x29a
+      runs-on:
+        description: The runner labels as JSON, such as '["self-hosted","ci"]' for a repo's own runner
+        type: string
+        default: '"ubuntu-latest"'
 permissions:
   contents: read
   pull-requests: read
   issues: read
 jobs:
   guard:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
     timeout-minutes: 5
     steps:
       - name: Check PR against AGENTS.md rules
