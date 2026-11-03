@@ -26,11 +26,12 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs-on) }}
     timeout-minutes: 5
     steps:
-      # Hosted runners have gh; a self-hosted one may not. Same pin as zoryax scripts/ci/tools.sh.
-      - name: Install gh if missing
+      # The pinned gh, whatever the runner has: guard01's distro gh 2.46 lost a label event on a PR
+      # with many events (x2e-dev/infra#8, 2026-11-03). Same pin as zoryax scripts/ci/tools.sh.
+      - name: Install the pinned gh
         run: |
-          command -v gh >/dev/null && exit 0
           v=2.103.3
+          gh --version 2>/dev/null | grep -q " $v " && exit 0
           curl -fsSL --retry 5 -o "$RUNNER_TEMP/gh.tgz" "https://github.com/cli/cli/releases/download/v$v/gh_${v}_linux_amd64.tar.gz"
           echo "4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d  $RUNNER_TEMP/gh.tgz" | sha256sum -c --quiet
           tar -xzf "$RUNNER_TEMP/gh.tgz" -C "$RUNNER_TEMP"
