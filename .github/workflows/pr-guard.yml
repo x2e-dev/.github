@@ -1,5 +1,6 @@
 # Reusable PR guard. Call it from every x2e-dev repository:
 #   jobs: { guard: { uses: x2e-dev/.github/.github/workflows/pr-guard.yml@main, with: { protected-paths: "..." } } }
+# A private repo passes runs-on: '["self-hosted","guard"]': GitHub starts no hosted runners for them.
 name: pr-guard
 on:
   workflow_call:
@@ -12,15 +13,28 @@ on:
         description: GitHub login whose labels count as owner approval
         type: string
         default: rs0x29a
+      runs-on:
+        description: Runner labels as JSON, such as '["self-hosted","guard"]' for the org's guard runner
+        type: string
+        default: '"ubuntu-latest"'
 permissions:
   contents: read
   pull-requests: read
   issues: read
 jobs:
   guard:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
     timeout-minutes: 5
     steps:
+      # Hosted runners have gh; a self-hosted one may not. Same pin as zoryax scripts/ci/tools.sh.
+      - name: Install gh if missing
+        run: |
+          command -v gh >/dev/null && exit 0
+          v=2.103.3
+          curl -fsSL --retry 5 -o "$RUNNER_TEMP/gh.tgz" "https://github.com/cli/cli/releases/download/v$v/gh_${v}_linux_amd64.tar.gz"
+          echo "4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d  $RUNNER_TEMP/gh.tgz" | sha256sum -c --quiet
+          tar -xzf "$RUNNER_TEMP/gh.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/gh_${v}_linux_amd64/bin" >>"$GITHUB_PATH"
       - name: Check PR against AGENTS.md rules
         env:
           GH_TOKEN: ${{ github.token }}
