@@ -13,8 +13,11 @@ HARD_LIMIT=1000
 
 check_title() { [[ $1 =~ ^(feat|fix|docs|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?:\ .+ ]]; }
 
-# stdin: filename<TAB>additions<TAB>deletions; prints changed lines outside generated files
-count_lines() { awk -F'\t' '$1 !~ ENVIRON["GENERATED_RE"] { n += $2 + $3 } END { print n + 0 }'; }
+# stdin: filename<TAB>additions<TAB>deletions; prints changed lines outside generated files and
+# outside SIZE_EXEMPT, a repository's own vendored data (library's mirrored items/, owner 2026-11-06)
+count_lines() {
+  awk -F'\t' '$1 !~ ENVIRON["GENERATED_RE"] && (ENVIRON["SIZE_EXEMPT"] == "" || $1 !~ ENVIRON["SIZE_EXEMPT"]) { n += $2 + $3 } END { print n + 0 }'
+}
 
 # exactly one provenance trailer per commit message
 provenance_ok() {
@@ -74,6 +77,8 @@ self_test() {
   check_title 'feat(runtime): add journal' && check_title 'fix!: drop x' && ! check_title 'Add stuff' && ! check_title 'feat:missing space'
   [ "$(printf 'src/a.ts\t10\t5\npnpm-lock.yaml\t900\t900\npkg/generated/x.ts\t50\t0\nb.gen.ts\t3\t3\n' | count_lines)" = 15 ]
   [ "$(printf 'packages/tui/test/frames/80x24-en.txt\t900\t800\npackages/tui/test/app.test.tsx\t7\t2\nframes/x.ts\t4\t0\n' | count_lines)" = 13 ]
+  [ "$(printf 'items/skill/a/x/SKILL.md\t9000\t0\nsrc/harvest.ts\t5\t1\n' | SIZE_EXEMPT='^items/' count_lines)" = 6 ]
+  [ "$(printf 'items/skill/a/x/SKILL.md\t9000\t0\n' | SIZE_EXEMPT='' count_lines)" = 9000 ]
   provenance_ok $'feat: x\n\nAgent-Session: abc' && provenance_ok $'docs: y\n\nHuman-Authored: yes'
   ! provenance_ok 'feat: none' && ! provenance_ok $'feat: both\n\nAgent-Session: a\nHuman-Authored: yes'
   printf 'packages/policy/src/a.ts\n' | touches_protected $'packages/exec/*\npackages/policy/*'

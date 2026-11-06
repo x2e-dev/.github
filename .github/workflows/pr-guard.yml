@@ -13,6 +13,12 @@ on:
         description: GitHub login whose labels count as owner approval
         type: string
         default: rs0x29a
+      size-exempt:
+        description: >-
+          A regex of paths the size limits leave out, for a repository's own vendored data only, such
+          as library's mirrored '^items/' (owner, 2026-11-06). The calling workflow is a protected path.
+        type: string
+        default: ''
       runs-on:
         description: Runner labels as JSON, such as '["self-hosted","guard"]' for the org's guard runner
         type: string
@@ -43,6 +49,7 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           OWNER: ${{ inputs.owner }}
           PROTECTED: ${{ inputs.protected-paths }}
+          SIZE_EXEMPT: ${{ inputs.size-exempt }}
         run: |
           gh api -H 'Accept: application/vnd.github.raw' 'repos/x2e-dev/.github/contents/scripts/pr-guard.sh?ref=main' > "$RUNNER_TEMP/pr-guard.sh"
           bash "$RUNNER_TEMP/pr-guard.sh" check
