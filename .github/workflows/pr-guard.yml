@@ -36,10 +36,21 @@ jobs:
       # with many events (x2e-dev/infra#8, 2026-11-03). Same pin as zoryax scripts/ci/tools.sh.
       - name: Install the pinned gh
         run: |
-          v=2.103.3
+          v=2.103.3 sum=4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d
           gh --version 2>/dev/null | grep -q " $v " && exit 0
-          curl -fsSL --retry 5 -o "$RUNNER_TEMP/gh.tgz" "https://github.com/cli/cli/releases/download/v$v/gh_${v}_linux_amd64.tar.gz"
-          echo "4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d  $RUNNER_TEMP/gh.tgz" | sha256sum -c --quiet
+          # The runner keeps the checked tarball by its SHA-256; when github.com's download fails, the
+          # API serves the same asset (both crawled on 2026-11-08 and the guard timed out).
+          cache=${XDG_CACHE_HOME:-$HOME/.cache}/zoryax-ci-tools
+          if [ -f "$cache/$sum" ] && echo "$sum  $cache/$sum" | sha256sum -c --quiet 2>/dev/null; then
+            cp "$cache/$sum" "$RUNNER_TEMP/gh.tgz"
+          else
+            get="curl -fsSL --retry 5 --retry-all-errors --speed-limit 1024 --speed-time 60 -o $RUNNER_TEMP/gh.tgz"
+            $get "https://github.com/cli/cli/releases/download/v$v/gh_${v}_linux_amd64.tar.gz" ||
+              $get -H 'Accept: application/octet-stream' https://api.github.com/repos/cli/cli/releases/assets/679195621
+            echo "$sum  $RUNNER_TEMP/gh.tgz" | sha256sum -c --quiet
+            mkdir -p "$cache" && cp "$RUNNER_TEMP/gh.tgz" "$cache/$sum.$$" && mv "$cache/$sum.$$" "$cache/$sum"
+          fi
+          echo "$sum  $RUNNER_TEMP/gh.tgz" | sha256sum -c --quiet
           tar -xzf "$RUNNER_TEMP/gh.tgz" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/gh_${v}_linux_amd64/bin" >>"$GITHUB_PATH"
       - name: Check PR against AGENTS.md rules
