@@ -1,0 +1,53 @@
+# Moved commits whose provenance trailer Git does not parse (its last paragraph is a Co-authored-by
+# line the old squash merge appended): <repo> <sha>. pr-guard accepts them only under the owner's
+# size-exempt label and only when the message still holds an Agent-Session line (zoryax#2083,
+# strategy#191). List only commits git filter-repo moved from another x2e-dev main.
+x2e-dev/zoryax-sdk 0e544c32eb5e66f10bcaa364126da3fd287e975b
+x2e-dev/zoryax-sdk 0f90af89f48ca060721ffbc31bbbd371731cc417
+x2e-dev/zoryax-sdk 10c911d776a32c5d154377ac585239aa7288beed
+x2e-dev/zoryax-sdk 129855b17d460d21dc5a9666c88e981e77fca8b9
+x2e-dev/zoryax-sdk 14844a1643a12f6594486579438b70d7171ff693
+x2e-dev/zoryax-sdk 1530c6a03cbb532d3c09d21b838ae8199a3fe574
+x2e-dev/zoryax-sdk 178f49501f40d04dd8987d2db86ff5d17da36f23
+x2e-dev/zoryax-sdk 1bd0b7d5a25c7c8855f15b4907918a5852098ed9
+x2e-dev/zoryax-sdk 1f0e55109066e3d7b904300214d693da6fee9ea1
+x2e-dev/zoryax-sdk 22ce1aac9aff1cebf8d215d0787705981e442088
+x2e-dev/zoryax-sdk 24279709912a3dc73455b12824ebfa8fce903141
+x2e-dev/zoryax-sdk 38c5b0604c5f09dbc36451388359d1cfd42383d3
+x2e-dev/zoryax-sdk 39768da0f20c757ba65e6d572edf66e52ec6f105
+x2e-dev/zoryax-sdk 3cf0a67239d6697ed4c92da57c4b2bed899ff767
+x2e-dev/zoryax-sdk 491dafe87d586bfab0c7f9cc98bcfaa668a1c11d
+x2e-dev/zoryax-sdk 4cac2deffe2feaddda3a576b80c7b55d63b48964
+x2e-dev/zoryax-sdk 5197058f8564896d8145d54a8ca6d3ec6df7b765
+x2e-dev/zoryax-sdk 565d56dbda262a53412ff1fdd78f18f82e43d837
+x2e-dev/zoryax-sdk 593d78cfb8b2efc37c77ca04b6151f45378f233b
+x2e-dev/zoryax-sdk 5b30b7b0d112005e545f9259f70a0caa7225e000
+x2e-dev/zoryax-sdk 5b6ff12f46c7f3a37ef8b75e5588b482e1b09bb4
+x2e-dev/zoryax-sdk 5bb3449ed6c71a140dd316546b7ead2a088e952f
+x2e-dev/zoryax-sdk 635e2f9ac13af785e4d098a6828a5b6a64450550
+x2e-dev/zoryax-sdk 6ed03b6b0d4bfdf98ff12bfbc713f0d3b811eb6a
+x2e-dev/zoryax-sdk 74a8388eec5a7db48d07cb327431e53ab1c1024d
+x2e-dev/zoryax-sdk 8a691e71a5b7918cea089b500ecddf35c012a0ca
+x2e-dev/zoryax-sdk 8f3905dbd6a3d030a07841615c1fcc6346c9aadc
+x2e-dev/zoryax-sdk 94a2c389cd9b6d9485a931619d13b0394f39784e
+x2e-dev/zoryax-sdk 952bb9cb2c41f659e9f76f80857253737e0c1c71
+x2e-dev/zoryax-sdk a20d1d6ac48777cfb346866003ff19a65f250e4f
+x2e-dev/zoryax-sdk a8e20398c321a07ae210c942d4ff8a43a16cc743
+x2e-dev/zoryax-sdk aa35011cc0de5b5e63cd3f9276797b1fcb6d1343
+x2e-dev/zoryax-sdk ac85a012ed810b7c2cb64e496afc212cb81ba4ab
+x2e-dev/zoryax-sdk acf1390ad406e8b8eeb5156ae9912cc76750834f
+x2e-dev/zoryax-sdk af5746e73ffa900c8e42e734e74bf34d6d70f660
+x2e-dev/zoryax-sdk b76697a83acce3b4ff472428720336aa6d82dd00
+x2e-dev/zoryax-sdk c068a94848dd17225a7a4219ef47a333c9e9b4ce
+x2e-dev/zoryax-sdk c4ef10521aeb104f0cf3d679ae1bef9f5a3550d1
+x2e-dev/zoryax-sdk ca2231c7324a961ea7ee18a41af765248c152e9b
+x2e-dev/zoryax-sdk cb9e1293894f1e114c402d24f6df003b1aca447c
+x2e-dev/zoryax-sdk cbd0ead4681b13d65f3e2dc2609d0131672fe1e8
+x2e-dev/zoryax-sdk d78908a4d1b3d90118afb3d22874e9fbd4400bbe
+x2e-dev/zoryax-sdk df07ced947ce5c7992324c09df0ce682799e85f8
+x2e-dev/zoryax-sdk dfb68af45525942d4441f31c13f218139593f8e0
+x2e-dev/zoryax-sdk e73ef8acdf0dcf99576936b726b450291e8edad7
+x2e-dev/zoryax-sdk eb402d435f48287c4ab8aa6f2ac005ef64c990c6
+x2e-dev/zoryax-sdk ed9ed4381022e1302b66baa2194e4ce6888e7546
+x2e-dev/zoryax-sdk edecb3d0642b78a5315a340b54d1dc294df87497
+x2e-dev/zoryax-sdk ff165689d63663592b3048df3ecab0e7729c75cc
