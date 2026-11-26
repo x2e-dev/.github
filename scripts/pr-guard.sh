@@ -40,10 +40,10 @@ check_commits() {
   total=$(git -C "$1" rev-list --count "$2..$3") || return 2
   for sha in $shas; do
     n=$((n + 1))
-    t=$(git -C "$1" log -1 --format='%(trailers:only,unfold)' "$sha") || return 2
+    t=$(git -C "$1" log -1 --no-use-mailmap --format='%(trailers:only,unfold)' "$sha") || return 2
     provenance_ok "$t" && continue
     if [ -n "${4:-}" ] && grep -qx "$sha" <<<"${IMPORTED:-}"; then
-      git -C "$1" log -1 --format=%B "$sha" | grep -qE '^(Agent-Session|Human-Authored): .+' && continue
+      git -C "$1" log -1 --no-use-mailmap --format=%B "$sha" | grep -qE '^(Agent-Session|Human-Authored): .+' && continue
     fi
     echo "commit ${sha:0:7} needs exactly one trailer Git parses, last and alone: 'Agent-Session: <id>' or 'Human-Authored: yes'"
   done
@@ -149,7 +149,18 @@ commits_self_test() {
   IMPORTED=$late check_commits "$d" base main x >"$o" && [ ! -s "$o" ] || return 1
   check_commits "$d" base no-such-ref >/dev/null 2>&1 && return 1
   check_commits "$d/missing" base main >/dev/null 2>&1 && return 1
-  rm -f "$o" && rm -rf "${d:?}/.git" && rmdir "$d"
+  # CI's bare commit-graph-only clone of a private repository: the remote cannot be reached after the
+  # clone, so neither git log call may lazy-fetch a tree, e.g. HEAD:.mailmap (x2e-dev/.github#13)
+  echo x >"$d/f" && git -C "$d" add f && git -C "$d" -c user.name=t -c user.email=t@t commit -q -m 'feat: tree' -m 'Agent-Session: a' || return 1
+  local c r; c=$(mktemp -d)
+  git -C "$d" config uploadpack.allowFilter true
+  git clone -q --bare --filter=tree:0 --no-tags --single-branch --branch main "file://$d" "$c/r.git" || return 1
+  mv "$d" "$d.gone"
+  r=0; GIT_TERMINAL_PROMPT=0 IMPORTED=$late check_commits "$c/r.git" main~2 main x >"$o" 2>/dev/null || r=$?
+  mv "$d.gone" "$d"
+  [ "$r" = 0 ] && [ ! -s "$o" ] && [ "$CHECKED" = 2 ] || return 1
+  rm -rf "${c:?}/r.git" && rmdir "$c"
+  rm -f "$o" && rm -rf "${d:?}/.git" && rm -f "$d/f" && rmdir "$d"
 }
 
 self_test() {
